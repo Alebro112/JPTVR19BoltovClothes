@@ -48,6 +48,11 @@ public class Clothes implements Serializable{
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return  "Название товара: " + name + ", Цена: " + price + ", Остаток в магазине: " + quantity + '}';
+    }
     
     
 }
