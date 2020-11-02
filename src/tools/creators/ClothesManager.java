@@ -29,7 +29,9 @@ public class ClothesManager {
     }
     public void printList(List<Clothes> listClothes){
         for (int i = 0; i < listClothes.size(); i++) {
-            System.out.println(i + ". " + listClothes.get(i).getName() + " Цена: " + listClothes.get(i).getPrice() + " евро" + " Колличество: " + listClothes.get(i).getQuantity());
+            if (listClothes.get(i).getQuantity() > 0) {
+                System.out.println(i + ". " + listClothes.get(i).getName() + " Цена: " + listClothes.get(i).getPrice() + " евро" + " Колличество: " + listClothes.get(i).getQuantity());
+            }
         }
     }
 }
