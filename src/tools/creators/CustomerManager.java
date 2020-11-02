@@ -6,6 +6,7 @@
 package tools.creators;
 
 import entity.Customer;
+import entity.User;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,9 +32,11 @@ public class CustomerManager {
         return customer; 
     }
      
-    public void printList(List<Customer> listCustomers){
-        for (int i = 0; i < listCustomers.size(); i++) {
-            System.out.println(i + ". " + listCustomers.get(i).toString());
+    public void printList(List<User> listUsers){
+        for (int i = 0; i < listUsers.size(); i++) {
+            if(listUsers.get(i).getCustomer() != null){
+                System.out.println(i + ". " + listUsers.get(i).getCustomer().toString());
+            }
         }
     }
 }

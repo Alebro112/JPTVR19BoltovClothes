@@ -3,6 +3,7 @@ package jptvr19boltovclothes;
 import entity.Clothes;
 import entity.Customer;
 import entity.Deal;
+import entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,74 +11,51 @@ import tools.Saver;
 import tools.creators.ClothesManager;
 import tools.creators.CustomerManager;
 import tools.creators.DealManager;
+import tools.creators.UserManager;
+import ui.ManagerUI;
+import ui.UserUI;
 
 
 class App {
-    private List<Clothes> listClothes = new ArrayList<>();
+    private List<User> listUsers = new ArrayList<>();
     private List<Customer> listCustomers = new ArrayList<>();
-    private List<Deal> listDeals = new ArrayList<>();
-    
-    private ClothesManager clothesManager = new ClothesManager();
+
+    private UserManager userManager = new UserManager();
     private CustomerManager customerManager = new CustomerManager();
-    private DealManager dealManager = new DealManager();
-    
+
     private Saver saver = new Saver();
         
     public App() {
-        listClothes = saver.load("clothes");
+        listUsers = saver.load("users");
         listCustomers = saver.load("customers");
-        listDeals = saver.load("deals");
     }
+    
     
     Scanner scanner = new Scanner(System.in);
     public void run() {
-        boolean repeat = true;
-        while(repeat){
-            int numTask = 0;
-            while(true){          
-                System.out.println("1. Добавить товар");
-                System.out.println("2. Список товаров");
-                System.out.println("3. Добавить покупателя");
-                System.out.println("4. Список покупателей");
-                System.out.println("5. Купить товар");
-                System.out.println("6. Список покупок");
-                System.out.println("0. Выйти");
-                System.out.print("Выберите задачу: ");
-                numTask = scanner.nextInt();
-                if(numTask > -1 && numTask <7){
-                    break;
-                } 
-            }
-            switch(numTask){
-                case(1):
-                    listClothes.add(clothesManager.createClothes());
-                    saver.save(listClothes, "clothes");
-                    break;
-                case(2):
-                    clothesManager.printList(listClothes);
-                    break;
-                case(3):
-                    listCustomers.add(customerManager.createCustomer());
-                    saver.save(listCustomers, "customers");
-                    break;
-                case(4):
-                    customerManager.printList(listCustomers);
-                    break;
-                case(5):
-                    listDeals.add(dealManager.buyClothes(listClothes, listCustomers));
-                    saver.save(listClothes, "clothes");
-                    saver.save(listDeals, "deals");
-                    break;
-                case(6):
-                    dealManager.printList(listDeals);
-                    break;
-                case(0):
-                    repeat = false;
-                    break;
-                default:
-                    break;
-            }
-        }  
+        User user = new User();
+        System.out.println("1. Вход");
+        System.out.println("2. Регистрация");
+        
+        int num = scanner.nextInt();
+        
+        if (num == 1){
+            user = userManager.login(listUsers);
+        } else {
+            user = userManager.createUser();
+            listUsers.add(user);
+            saver.save(listUsers, "users");   
+            System.out.println(user.toString());
+        }
+        
+        if(user.getRole().equals("MANAGER")){
+            ManagerUI managerUI = new ManagerUI();
+            managerUI.run(user);
+        }
+        if(user.getRole().equals("CUSTOMER")){
+            UserUI userUI = new UserUI();
+            userUI.run(user);
+        }
     }
     
 }

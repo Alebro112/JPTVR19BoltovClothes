@@ -8,6 +8,7 @@ package tools.creators;
 import entity.Clothes;
 import entity.Customer;
 import entity.Deal;
+import entity.User;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -24,7 +25,7 @@ public class DealManager {
     CustomerManager customerManager = new CustomerManager();
     Calendar calendar = new GregorianCalendar();
     
-    public Deal buyClothes(List<Clothes> listClothes, List<Customer> listCustomers){  
+    public Deal buyClothes(List<Clothes> listClothes, List<User> listUsers, User user){  
         System.out.println("------- Покупка товара -------");
         int idClothes = -1;
         int idCustomers = -1;
@@ -42,13 +43,28 @@ public class DealManager {
             }   
             System.out.println("--- Ещё раз ---");
         }
+        if(user.getRole().equals("CUSTOMER")) {
+            Clothes clothes = listClothes.get(idClothes);
+            Customer customer = user.getCustomer();
+            
+            clothes.setQuantity(clothes.getQuantity()-1);
+            customer.setMoney(customer.getMoney() - clothes.getPrice());
+
+            Deal deal = new Deal();
+            deal.setCustomer(customer);
+            deal.setClothes(clothes);
+            deal.setPurchaseDate(calendar.getTime());
+            System.out.println(deal.toString());
+            System.out.println("---- Куплено ----");
+            return deal;
+        }
         while(true){
             System.out.println("--- Список покупателей ---");
-            customerManager.printList(listCustomers);
+            customerManager.printList(listUsers);
             System.out.print("Выберите ИД пользователя из списка: ");
             try{
                 idCustomers = scanner.nextInt();
-                if (listCustomers.get(idCustomers).getMoney() > 0) {
+                if (listUsers.get(idCustomers).getCustomer().getMoney() > 0) {
                     break;
                 } else {
                     System.out.println("Недостаточно денег");
@@ -59,7 +75,7 @@ public class DealManager {
             System.out.println("--- Ещё раз ---");
         }
         Clothes clothes = listClothes.get(idClothes);
-        Customer customer = listCustomers.get(idCustomers);
+        Customer customer = listUsers.get(idCustomers).getCustomer();
         
         clothes.setQuantity(clothes.getQuantity()-1);
         customer.setMoney(customer.getMoney() - clothes.getPrice());
@@ -73,10 +89,18 @@ public class DealManager {
         return deal;
     }
     
-    public void printList(List<Deal> listDeals){
+    public void printList(List<Deal> listDeals, User user){
         System.out.println("------- Список покупок -------");
-        for (int i = 0; i < listDeals.size(); i++) {
-            System.out.println(i + ". " + listDeals.get(i).toString());
+        if(user.getRole().equals("CUSTOMER")){
+            for (int i = 0; i < listDeals.size(); i++) {
+                if(listDeals.get(i).getCustomer().getFirstName().equals(user.getCustomer().getFirstName())){
+                    System.out.println(i + ". " + listDeals.get(i).toString());
+                }
+            }
+        } else {
+            for (int i = 0; i < listDeals.size(); i++) {
+                System.out.println(i + ". " + listDeals.get(i).toString());
+            }
         }
     }   
 }
